@@ -26,7 +26,7 @@ GUI:
     to communicate with the Controller.
 
 Python version:
-Python 2.7
+Python 3.6
 """
 
 import os
@@ -62,7 +62,7 @@ class TagFiles:
     def set_tag(self, tag_list):
         """set self._tag_list after checking the list validity"""
         for tag in tag_list:
-            if type(tag.encode('utf-8')) is not str:
+            if type(tag) is not str:
                 return -1
         # Checking: if a tag item contains invalid char for filename, the tag
         #           item should be rejected.
@@ -71,9 +71,9 @@ class TagFiles:
         #    raise errors but create some unexpected files.
         self._tag_list = []
         for tag in tag_list:
-            tag_str = tag.encode('utf-8')
-            if self.SPECIAL_RE.search(tag_str) is None:
-                self._tag_list.append(tag_str)
+            # tag_str = tag.encode('utf-8')     # unnecessary in Python 3
+            if self.SPECIAL_RE.search(tag) is None:
+                self._tag_list.append(tag)
 
     def set_path_tags(self, path, tag_list):
         """initialize self._path and self._tag_list at the same time"""
@@ -85,16 +85,16 @@ class TagFiles:
         # check the existence of path and tag list
         if (self._path is None) or (self._tag_list is None):
             return -1
-
+        
         os.chdir(self._path)
         res = ""
         for tag in self._tag_list:
             try:
-                open(tag.decode("utf-8")+".tag", 'a').close()
-                print "creating " + tag.decode("utf-8")+".tag"
+                open(tag+".tag", 'a').close()
+                print("creating " + tag+".tag")
             except Exception as e:
                 res += (e.message + "; ")
-                print res
+                print(res)
         os.chdir(self.BASE_PATH)
 
 
@@ -149,7 +149,7 @@ class GUI:
         self._controller.event_raised("close", self)
 
     def create_button_click(self):
-        """raise the creation event"""
+        """raise the create event"""
         self._controller.event_raised("create", self)
 
     def get_path(self):
